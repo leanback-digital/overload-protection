@@ -6,7 +6,8 @@ var frameworks = {
   express: require('./lib/express'),
   http: require('./lib/http'),
   koa: require('./lib/koa'),
-  restify: require('./lib/restify')
+  restify: require('./lib/restify'),
+  generic: require('./lib/generic')
 }
 
 var defaults = {
@@ -21,7 +22,7 @@ var defaults = {
   logStatsOnReq: false
 }
 
-function protect (framework, opts) {
+function protect(framework, opts) {
   opts = Object.assign({}, defaults, opts)
   if (typeof framework === 'undefined') {
     throw Error('Please specify a framework')
@@ -36,14 +37,14 @@ function protect (framework, opts) {
     throw Error('logStatsOnReq cannot be enabled unless logging is also enabled')
   }
   var update = (opts.maxEventLoopDelay > 0)
-    ? function update () {
+    ? function update() {
       profiler.eventLoopOverload = eventLoopProfiler.overLimit
       profiler.eventLoopDelay = eventLoopProfiler.delay
       profiler.overload = profiler.eventLoopOverload ||
-          profiler.heapUsedOverload ||
-          profiler.rssOverload
+        profiler.heapUsedOverload ||
+        profiler.rssOverload
     }
-    : function update () {
+    : function update() {
       profiler.overload = profiler.heapUsedOverload || profiler.rssOverload
     }
 
@@ -86,7 +87,7 @@ function protect (framework, opts) {
 
   return integrate
 
-  function checkMemory () {
+  function checkMemory() {
     var mem = process.memoryUsage()
     var heapUsed = mem.heapUsed
     var rss = mem.rss
@@ -95,7 +96,7 @@ function protect (framework, opts) {
     update()
   }
 
-  function stop () {
+  function stop() {
     if (eventLoopProfiler) eventLoopProfiler.stop()
     clearInterval(timer)
   }
